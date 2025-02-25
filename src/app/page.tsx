@@ -91,7 +91,7 @@ export default function Home() {
           onChange={(e) => setRemoveNumber(e.target.value)}
         />
       </div>
-      <DominoButton onClick={removeByNumber}>Reset</DominoButton>
+      <DominoButton onClick={removeByNumber}>Remove</DominoButton>
     </div>
   );
 }
