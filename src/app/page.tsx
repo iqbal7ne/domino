@@ -1,101 +1,97 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useMemo } from "react";
+import DominoCard from "../components/DominoCard";
+import DominoButton from "@/components/DominoButton";
+
+type Domino = [number, number];
+
+const initialDominoes: Domino[] = [
+  [6, 1],
+  [4, 3],
+  [5, 1],
+  [3, 4],
+  [1, 1],
+  [3, 4],
+  [1, 2],
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [dominoes, setDominoes] = useState<Domino[]>(initialDominoes);
+  const [removeNumber, setRemoveNumber] = useState<string>("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const doubleNumbersCount = useMemo(() => {
+    return dominoes.filter(([a, b]) => a === b).length;
+  }, [dominoes]);
+
+  const sortAscending = () => {
+    const sorted = [...dominoes].sort((a, b) => a[0] + a[1] - (b[0] + b[1]));
+    setDominoes(sorted);
+  };
+
+  const sortDescending = () => {
+    const sorted = [...dominoes].sort((a, b) => b[0] + b[1] - (a[0] + a[1]));
+    setDominoes(sorted);
+  };
+
+  const flipCards = () => {
+    const flipped = dominoes.map(([a, b]) => [b, a] as Domino);
+    setDominoes(flipped);
+  };
+
+  const removeDuplicates = () => {
+    const unique = dominoes.filter(
+      (card, index, self) =>
+        index === self.findIndex((c) => c[0] === card[0] && c[1] === card[1])
+    );
+    setDominoes(unique);
+  };
+
+  const resetData = () => {
+    setDominoes(initialDominoes);
+  };
+
+  const removeByNumber = () => {
+    const filtered = dominoes.filter(
+      ([a, b]) => a + b !== parseInt(removeNumber)
+    );
+    setDominoes(filtered);
+    setRemoveNumber("");
+  };
+
+  return (
+    <div className="place-self-center w-[50%]">
+      <h1 className="font-bold text-4xl">Domino</h1>
+      <div className="border border-black rounded-md bg-gray-200 p-2 mb-1">
+        <strong>Source:</strong> {JSON.stringify(dominoes)}
+      </div>
+      <div className="border border-black rounded-md bg-gray-200 p-2 mb-1">
+        <strong>Double Numbers:</strong> {doubleNumbersCount}
+      </div>
+
+      <div className="flex gap-3 py-3">
+        {dominoes.map(([a, b], index) => (
+          <DominoCard key={index} a={a} b={b} />
+        ))}
+      </div>
+
+      <div className="flex items-center gap-3 mb-3">
+        <DominoButton onClick={sortAscending}>Sort (ASC)</DominoButton>
+        <DominoButton onClick={sortDescending}>Sort (DESC)</DominoButton>
+        <DominoButton onClick={flipCards}>Flip</DominoButton>
+        <DominoButton onClick={removeDuplicates}>Remove Duplicate</DominoButton>
+        <DominoButton onClick={resetData}>Reset</DominoButton>
+      </div>
+      <div className="flex">
+        <input
+          className="w-full border border-black mb-2 rounded-md h-10"
+          type="number"
+          placeholder="Input Number"
+          value={removeNumber}
+          onChange={(e) => setRemoveNumber(e.target.value)}
+        />
+      </div>
+      <DominoButton onClick={removeByNumber}>Reset</DominoButton>
     </div>
   );
 }
